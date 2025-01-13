@@ -291,6 +291,7 @@ def dataset_viz_pred(pred_label_dir):
         # Load data from dataset
         objects = dataset.get_label_objects(data_idx)
         objects_pred_label_filename = os.path.join(pred_label_dir, '%06d.txt'%(data_idx))
+        print("objects_pred_label_filename = ", objects_pred_label_filename)
         if os.path.exists(objects_pred_label_filename):
             objects_pred = utils.read_label(objects_pred_label_filename)
         #objects[0].print_object()
@@ -304,14 +305,18 @@ def dataset_viz_pred(pred_label_dir):
         # Draw 2d and 3d boxes on image
         # show_image_with_boxes(img, objects, calib, False)
         img1,img2= return_image_with_boxes(img, objects, calib, True)
-        cv2.imwrite(os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'),img1)
-        cv2.imwrite(os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'),img2)
+        cv2.imwrite(os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'), img1)
+        cv2.imwrite(os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'), img2)
+        print("Saved ", os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'))
+        print("Saved ", os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'))
 
         if os.path.exists(objects_pred_label_filename):
             print('writing...')
             img1_pred,img2_pred= return_image_with_boxes(img, objects_pred, calib, True)
             cv2.imwrite(os.path.join(save2ddir_pred, str(data_idx).zfill(6) + '.png'),img1_pred)
             cv2.imwrite(os.path.join(save3ddir_pred, str(data_idx).zfill(6) + '.png'),img2_pred)
+            print("Saved ", os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'))
+            print("Saved ", os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'))
         # raw_input()
         # Show all LiDAR points. Draw 3d box in LiDAR point cloud
         # show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height)
@@ -321,4 +326,4 @@ if __name__=='__main__':
     import mayavi.mlab as mlab
     from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
     #dataset_viz()
-    dataset_viz_pred('train/kitti_caronly_v1_fromrgb/data')
+    dataset_viz_pred('/content/frustum_pointnets_pytorch/test_results/data')
