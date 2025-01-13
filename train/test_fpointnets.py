@@ -67,10 +67,8 @@ Loss = FrustumPointNetLoss()#return_all=FLAGS.return_all_loss)
 # Load Frustum Datasets.
 if FLAGS.dataset == 'kitti':
     if FLAGS.data_path == None:
-        print("qua")
         overwritten_data_path = 'kitti/frustum_' + FLAGS.objtype + '_' + FLAGS.split + '.pickle'
     else:
-        print("qui")
         overwritten_data_path = FLAGS.data_path
     TEST_DATASET = provider.FrustumDataset(npoints=NUM_POINT, split='val',
                                            rotate_to_center=True, one_hot=True,
