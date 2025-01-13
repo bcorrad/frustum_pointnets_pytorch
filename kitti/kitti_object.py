@@ -23,6 +23,15 @@ try:
 except NameError:
     raw_input = input  # Python 3
 
+import argparse
+
+# Define argument parser
+def parse_args():
+    parser = argparse.ArgumentParser(description="KITTI Object Visualization")
+    parser.add_argument('--pred_label_dir', type=str, default=None, 
+                        help="Directory containing prediction labels for visualization")
+    return parser.parse_args()
+
 
 class kitti_object(object):
     '''Load and parse object data into a usable format.'''
@@ -294,6 +303,11 @@ def dataset_viz_pred(pred_label_dir):
         print("objects_pred_label_filename = ", objects_pred_label_filename)
         if os.path.exists(objects_pred_label_filename):
             objects_pred = utils.read_label(objects_pred_label_filename)
+            print("objects_pred = ", objects_pred)
+        else:
+            print("Prediction not found for ", objects_pred_label_filename)
+            continue
+        
         #objects[0].print_object()
         img = dataset.get_image(data_idx)
         #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -302,21 +316,23 @@ def dataset_viz_pred(pred_label_dir):
         #pc_velo = dataset.get_lidar(data_idx)[:,0:3]
         calib = dataset.get_calibration(data_idx)
 
+        # Target bboxes
         # Draw 2d and 3d boxes on image
         # show_image_with_boxes(img, objects, calib, False)
         img1,img2= return_image_with_boxes(img, objects, calib, True)
-        cv2.imwrite(os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'), img1)
-        cv2.imwrite(os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'), img2)
-        print("Saved ", os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'))
-        print("Saved ", os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'))
+        cv2.imwrite(os.path.join(save2ddir, str(data_idx).zfill(6) + '_true.png'), img1)
+        cv2.imwrite(os.path.join(save3ddir, str(data_idx).zfill(6) + '_true.png'), img2)
+        print("Saved ", os.path.join(save2ddir, str(data_idx).zfill(6) + '_true.png'))
+        print("Saved ", os.path.join(save3ddir, str(data_idx).zfill(6) + '_true.png'))
 
+        # Predicted bboxes
         if os.path.exists(objects_pred_label_filename):
             print('writing...')
             img1_pred,img2_pred= return_image_with_boxes(img, objects_pred, calib, True)
-            cv2.imwrite(os.path.join(save2ddir_pred, str(data_idx).zfill(6) + '.png'),img1_pred)
-            cv2.imwrite(os.path.join(save3ddir_pred, str(data_idx).zfill(6) + '.png'),img2_pred)
-            print("Saved ", os.path.join(save2ddir, str(data_idx).zfill(6) + '.png'))
-            print("Saved ", os.path.join(save3ddir, str(data_idx).zfill(6) + '.png'))
+            cv2.imwrite(os.path.join(save2ddir_pred, str(data_idx).zfill(6) + '_pred.png'),img1_pred)
+            cv2.imwrite(os.path.join(save3ddir_pred, str(data_idx).zfill(6) + '_pred.png'),img2_pred)
+            print("Saved ", os.path.join(save2ddir_pred, str(data_idx).zfill(6) + '_pred.png'))
+            print("Saved ", os.path.join(save3ddir_pred, str(data_idx).zfill(6) + '_pred.png'))
         # raw_input()
         # Show all LiDAR points. Draw 3d box in LiDAR point cloud
         # show_lidar_with_boxes(pc_velo, objects, calib, True, img_width, img_height)
@@ -325,5 +341,7 @@ def dataset_viz_pred(pred_label_dir):
 if __name__=='__main__':
     import mayavi.mlab as mlab
     from viz_util import draw_lidar_simple, draw_lidar, draw_gt_boxes3d
-    #dataset_viz()
-    dataset_viz_pred('/content/frustum_pointnets_pytorch/test_results/data')
+
+    args = parse_args()
+
+    dataset_viz_pred(args.pred_label_dir)
